@@ -22,7 +22,7 @@ function Singup() {
                     <div style={{ margin: 10 }}>
                         <TextField label="Mot de passe" variant="outlined" type="password" />
                     </div>
-                    <Button variant="contained" color="primary">S'inscrire</Button>
+                    <Button variant="contained" color="primary">Créer un compte</Button>
 
 
                 </CardContent>

@@ -1,11 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@material-ui/core/Button';
 import { Card, TextField, CardContent, Typography } from '@material-ui/core';
 import '../App.css'
+import axios from 'axios'
 
 function Login() {
+    const [email, setMail] = useState("")
+    const [password, setPassword] = useState("")
 
-
+    function login() {
+        axios.post('http://localhost:3001/users/login', { email, password }).then(res => {
+            console.log(res.data)
+        })
+    }
 
     return (
         <div className="card-form">
@@ -15,12 +22,12 @@ function Login() {
                         Connexion
                      </Typography>
                     <div style={{ margin: 10 }}>
-                        <TextField label="Email" variant="outlined" type="email" />
+                        <TextField value={email} onChange={e => setMail(e.target.value)} label="Email" variant="outlined" type="email" />
                     </div>
                     <div style={{ margin: 10 }}>
-                        <TextField label="Mot de passe" variant="outlined" type="password" />
+                        <TextField value={password} onChange={e => setPassword(e.target.value)} label="Mot de passe" variant="outlined" type="password" />
                     </div>
-                    <Button variant="contained" color="primary">Se connecter</Button>
+                    <Button onClick={login} variant="contained" color="primary">Se connecter</Button>
 
 
                 </CardContent>

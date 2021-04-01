@@ -7,14 +7,12 @@ import {
   Link
 } from "react-router-dom";
 import { makeStyles } from '@material-ui/core/styles';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
 import Login from './components/Login'
 import Signup from './components/Signup'
+import Dashboard from './components/Dashboard';
+import Header from './components/Header';
+import AddVendor from './components/AddVendor';
+import AddProduct from './components/AddProduct';
 
 
 
@@ -40,28 +38,15 @@ function App() {
     <div className="App">
       <Router>
         <div>
-
-
-          <AppBar position="static">
-            <Toolbar>
-              <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                <MenuIcon />
-              </IconButton>
-              <Typography variant="h6" className={classes.title}>
-                Site Ecommerce
-              </Typography>
-              <Button color="inherit" onClick={() => window.location = "/login"}>Connexion</Button>
-              <Button color="inherit" onClick={() => window.location = "/signup"}>Inscription</Button>
-
-            </Toolbar>
-          </AppBar>
-
+          <Header />
           {/* A <Switch> looks through its children <Route>s and
             renders the first one that matches the current URL. */}
           <Switch>
             <Route path="/login" component={Login} />
             <Route path="/signup" component={Signup} />
-
+            <Route path="/dashboard" component={Dashboard} />
+            <Route path="/addvendor" component={AddVendor} />
+            <Route path="/addproduct" component={AddProduct} />
 
           </Switch>
         </div>

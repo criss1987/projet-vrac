@@ -11,8 +11,16 @@ function Login() {
     function login() {
         axios.post('http://localhost:3001/users/login', { email, password }).then(res => {
             console.log(res.data)
+            if (res.data.success === true) {
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+                window.location = "/dashboard"
+            } else {
+                alert(res.data.message)
+            }
         })
     }
+
+
 
     return (
         <div className="card-form">

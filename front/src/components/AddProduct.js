@@ -1,0 +1,112 @@
+import React, { useState, useEffect } from 'react';
+import Button from '@material-ui/core/Button';
+import { Card, TextField, CardContent, Typography, Select, MenuItem, InputLabel } from '@material-ui/core';
+import '../App.css'
+import axios from 'axios'
+
+function AddProduct() {
+
+
+    const [nom_produit, setNomProduit] = useState("") // déclaration du state nom suivi de la fonction setNom qui permet de le mettre à jour
+    const [prix_produit, setPrixProduit] = useState("")
+    const [description_courte, setDescriptionCourte] = useState("")
+    const [description_longue, setDescriptionLongue] = useState("")
+    const [producteur_id, setProducteurId] = useState("")
+    const [producteurs, setProducteurs] = useState([])
+    const [poids_produit, setPoidsProduit] = useState("")
+    const [tva_produit, setTvaProduit] = useState("")
+    const [frais_port, setFraisPort] = useState("")
+    const [categorie_produit, setCategorieProduit] = useState("")
+    const [quantites_disponibles, setQuantitesDisponibles] = useState("")
+    const [img_url, setImgUrl] = useState("")
+
+
+
+    useEffect(() => {
+        // une fois que le composant est chargé, on récupère les producteurs pour les afficher dans le select
+        axios.get('http://localhost:3001/users/getvendors').then(res => {
+            console.log(res.data)
+            if (res.data.success === true) {
+                setProducteurs(res.data.vendors)
+            } else {
+                alert(res.data.message)
+            }
+        })
+    }, [])
+    function addProduct() {
+        axios.post('http://localhost:3001/users/addproduct', {
+            nom_produit, prix_produit, description_courte, description_longue, producteur_id, poids_produit
+            , tva_produit, frais_port, categorie_produit, quantites_disponibles, img_url
+        }).then(res => {
+            alert(res.data.message)
+        })
+    }
+
+
+    return (
+        <div className="card-form">
+            <Card style={{ padding: 40 }}>
+                <CardContent>
+                    <Typography color="textSecondary" gutterBottom>
+                        Ajouter un produit
+                     </Typography>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={nom_produit} onChange={e => setNomProduit(e.target.value)} label="Nom Produit" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={prix_produit} onChange={e => setPrixProduit(e.target.value)} label="Prix Produit" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={description_courte} onChange={e => setDescriptionCourte(e.target.value)} label="Description Courte" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={description_longue} onChange={e => setDescriptionLongue(e.target.value)} label="Description Longue" variant="outlined" type="email" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <InputLabel id="productor-label">Producteur</InputLabel>
+
+                        <Select
+                            style={{ width: 200 }}
+                            label="Producteur"
+                            labelId="productor-label"
+                            value={producteur_id}
+                            onChange={e => setProducteurId(e.target.value)}
+                        >
+                            {producteurs.map((producteur, index) => (
+                                <MenuItem key={"prpducteur" + index} value={producteur.vendor_id}>{producteur.nom_entreprise}</MenuItem>
+
+                            ))}
+                        </Select>
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={poids_produit} onChange={e => setPoidsProduit(e.target.value)} label="Poids" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={tva_produit} onChange={e => setTvaProduit(e.target.value)} label="TVA" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={frais_port} onChange={e => setFraisPort(e.target.value)} label="Frais de port" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={categorie_produit} onChange={e => setCategorieProduit(e.target.value)} label="Catégorie" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={quantites_disponibles} onChange={e => setQuantitesDisponibles(e.target.value)} label="Quantité disponible" variant="outlined" type="text" />
+                    </div>
+                    <div style={{ margin: 10 }}>
+                        <TextField value={img_url} onChange={e => setImgUrl(e.target.value)} label="URL de l'image" variant="outlined" type="text" />
+                    </div>
+                    <Button variant="contained" color="primary" onClick={addProduct}>Ajouter un produit</Button>
+
+
+                </CardContent>
+
+            </Card>
+        </div>
+    )
+
+
+}
+
+
+export default AddProduct

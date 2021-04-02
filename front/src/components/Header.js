@@ -47,7 +47,7 @@ function Header() {
     return (
         <AppBar position="static">
             <Toolbar>
-                <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
+                <IconButton onClick={() => window.location = "/dashboard"} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
                     <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
@@ -60,6 +60,8 @@ function Header() {
                     </div>
                     :
                     <div>
+                        <Button color="inherit" onClick={() => window.location = "/addproduct"}>Ajouter un produit</Button>
+
                         <Button color="inherit" onClick={logout}>Déconnexion</Button>
                     </div>
                 }

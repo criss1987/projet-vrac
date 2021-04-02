@@ -4,7 +4,7 @@ import { TextField } from '@material-ui/core';
 import '../App.css'
 import axios from 'axios'
 import { makeStyles } from '@material-ui/core/styles';
-
+import { useParams } from 'react-router-dom'
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
@@ -21,12 +21,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Grid from '@material-ui/core/Grid';
 
-function Dashboard() {
+function ProfileVendor() {
 
     const [user, setUser] = useState(null)
     const [expanded, setExpanded] = useState(false);
     const [produits, setProduits] = useState([])
-
+    const [vendor, setVendor] = useState(null)
+    const { vendor_id } = useParams();
+    console.log(vendor_id)
     // une fois que le composant est chargé cette fonction se lance
     useEffect(() => {
         // cette fonction vérifie si l'utilisateur est réellement connecté
@@ -42,9 +44,9 @@ function Dashboard() {
 
     // une fois que le composant est chargé, on récupère tous les produits et on les affiche
     useEffect(() => {
-        axios.get('http://localhost:3001/users/getproducts').then(res => {
-            console.log(res.data)
+        axios.get('http://localhost:3001/users/getprofilevendor/' + vendor_id).then(res => {
             setProduits(res.data.products)
+            setVendor(res.data.vendor)
         })
     }, [])
 
@@ -78,6 +80,10 @@ function Dashboard() {
     if (user != null) {
         return (
             <div>
+                Profil producteur
+                {vendor != null && <div>
+                    <h2>{vendor.nom_entreprise}</h2>
+                </div>}
                 <Grid container style={{
                     flexGrow: 1,
                 }} spacing={2}>
@@ -92,7 +98,7 @@ function Dashboard() {
                                         </IconButton>
                                     }
                                     title={produit.nom_produit}
-                                    subheader={<Button onClick={() => window.location = '/profile-vendor/' + produit.producteur_id}>{produit.nom_entreprise}</Button>}
+                                    subheader={produit.nom_entreprise}
                                 />
                                 <CardMedia
                                     className={classes.media}
@@ -137,4 +143,4 @@ function Dashboard() {
 
 
 // chaque composant doit être exporté pour pouvoir l'utiliser ailleurs
-export default Dashboard
+export default ProfileVendor

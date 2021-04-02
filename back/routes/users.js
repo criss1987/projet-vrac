@@ -280,4 +280,49 @@ router.get('/getproducts', (req, res) => {
     console.log(e)
   }
 })
+
+
+// route pour récup le profil du vendeur et ses produits
+router.get('/getprofilevendor/:vendor_id', (req, res) => {
+  try {
+    const vendor_id = req.params.vendor_id
+    // dans un premier temps on récupère le vendor avec son id
+    connection.query(
+      `
+    SELECT * FROM Vendors WHERE vendor_id = ${vendor_id}
+    `,
+      function (err, vendors, fields) {
+        if (err || vendors.length == 0) {
+          console.log(err)
+          res.json({ success: false, message: "Erreur lors de la récupération des produits, merci de réessayer" })
+          return;
+        }
+        const vendor = vendors[0]
+
+        // on récupère maintenant tous les produits du vendor trouvé
+        connection.query(
+          `
+          SELECT * FROM Products WHERE producteur_id = ${vendor.vendor_id}
+          `,
+          function (err, products, fields) {
+            if (err) {
+              console.log(err)
+              res.json({ success: false, message: "Erreur lors de la récupération des produits, merci de réessayer" })
+              return;
+            }
+            console.log(products)
+
+            res.json({ success: true, products: products, vendor: vendor })
+
+          }
+        )
+
+
+
+      }
+    )
+  } catch (e) {
+    console.log(e)
+  }
+})
 module.exports = router;

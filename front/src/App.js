@@ -14,6 +14,7 @@ import Header from './components/Header';
 import AddVendor from './components/AddVendor';
 import AddProduct from './components/AddProduct';
 import ProfileVendor from './components/ProfileVendor';
+import Panier from './components/Panier';
 
 
 
@@ -49,7 +50,7 @@ function App() {
             <Route path="/addvendor" component={AddVendor} />
             <Route path="/addproduct" component={AddProduct} />
             <Route path="/profile-vendor/:vendor_id" component={ProfileVendor} />
-
+            <Route path="/panier" component={Panier} />
             <Route path="/" component={Dashboard} />
 
           </Switch>

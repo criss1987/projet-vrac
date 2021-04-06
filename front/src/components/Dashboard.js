@@ -15,7 +15,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import ShareIcon from '@material-ui/icons/Share';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
@@ -74,7 +74,16 @@ function Dashboard() {
 
 
     const classes = useStyles();
-
+    const addProduct = (product) => {
+        let products = localStorage.getItem('products');
+        if (products) {
+            products = JSON.parse(products)
+            products.push(product)
+            localStorage.setItem('products', JSON.stringify(products))
+        } else {
+            localStorage.setItem('products', JSON.stringify([product]))
+        }
+    }
     if (user != null) {
         return (
             <div>
@@ -105,8 +114,8 @@ function Dashboard() {
                                     </Typography>
                                 </CardContent>
                                 <CardActions disableSpacing>
-                                    <IconButton aria-label="add to favorites">
-                                        <FavoriteIcon />
+                                    <IconButton aria-label="add to cart" onClick={() => addProduct(produit)}>
+                                        <AddShoppingCartIcon />
                                     </IconButton>
                                     <IconButton aria-label="share">
                                         <ShareIcon />

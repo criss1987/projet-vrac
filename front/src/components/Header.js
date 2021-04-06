@@ -61,7 +61,7 @@ function Header() {
                     :
                     <div>
                         <Button color="inherit" onClick={() => window.location = "/addproduct"}>Ajouter un produit</Button>
-
+                        <Button color="inherit" onClick={() => window.location = "/panier"}>Panier</Button>
                         <Button color="inherit" onClick={logout}>Déconnexion</Button>
                     </div>
                 }

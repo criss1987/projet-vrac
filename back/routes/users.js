@@ -4,6 +4,16 @@ const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
 
+const nodemailer = require("nodemailer");
+
+
+
+
+
+
+
+
+
 // create the connection to database
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -321,6 +331,62 @@ router.get('/getprofilevendor/:vendor_id', (req, res) => {
 
       }
     )
+  } catch (e) {
+    console.log(e)
+  }
+})
+
+
+async function sendMail(receiver, products, total, user) {
+  try {
+    const emailTransporter = nodemailer.createTransport({
+      host: 'smtp.mail.yahoo.com',
+      port: 465,
+      service: 'yahoo',
+      secure: false,
+      auth: {
+        user: 'projetvrac@yahoo.com',
+        pass: 'agdvpuiwncbfxojb'
+      },
+      debug: false,
+      logger: true
+    });
+
+    // send mail with defined transport object
+    let info = await emailTransporter.sendMail({
+      from: '"Projet Vrac" <projetvrac@yahoo.com>', // sender address
+      to: ["projetvrac@yahoo.com", receiver], // list of receivers
+      subject: "Nouvelle commande", // Subject line
+      text: "Nouvelle commande de la part de " + user.nom, // plain text body
+      html: 'TOTAL: ' + total + '€ ' + JSON.stringify(products), // html body
+    });
+
+    console.log(info)
+  } catch (e) {
+    console.log(e)
+  }
+
+}
+
+router.post('/sendDevis', async (req, res) => {
+  try {
+    const products = req.body.listProducts
+    const user = req.body.user
+    const total = req.body.total
+
+    // on regroupe les produits par producteur
+    let grouped = products.reduce(function (r, a) {
+      r[a.email] = r[a.email] || [];
+      r[a.email].push(a);
+      return r;
+    }, Object.create(null));
+
+
+    // on parcourt les produits des producteurs et on envoie un mail
+    for (var key of Object.keys(grouped)) {
+      await sendMail(key, grouped[key], total, user)
+    }
+
   } catch (e) {
     console.log(e)
   }

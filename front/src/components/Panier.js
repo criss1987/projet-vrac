@@ -9,7 +9,7 @@ import Avatar from '@material-ui/core/Avatar';
 import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
-
+import axios from 'axios'
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
 
 const Panier = (props) => {
     const [listProducts, setListProducts] = useState([])
+    const [user, setUser] = useState(null)
 
     const classes = useStyles();
 
@@ -36,6 +37,10 @@ const Panier = (props) => {
         let products = localStorage.getItem('products')
         if (products) {
             setListProducts(JSON.parse(products))
+        }
+        const u = localStorage.getItem('user');
+        if (u) {
+            setUser(JSON.parse(u))
         }
     }, [])
 
@@ -49,6 +54,14 @@ const Panier = (props) => {
 
     const total = listProducts.reduce((acc, curr) => acc + curr.prix_produit + ((curr.tva_produit * curr.prix_produit) / 100), 0)
 
+
+    const sendDevis = () => {
+        axios.post('http://localhost:3001/users/sendDevis', { listProducts, user, total }).then(res => {
+            console.log(res.data)
+        }).catch(e => {
+            console.log(e)
+        })
+    }
     return (
 
         <div>
@@ -77,7 +90,7 @@ const Panier = (props) => {
                 </ListItem>)}
             </List>
             <h1>Total: {total.toFixed(2)} €</h1>
-
+            <Button onClick={sendDevis}>Valider le panier</Button>
         </div>
     )
 }

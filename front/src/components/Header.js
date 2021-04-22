@@ -6,7 +6,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
+import logo from '../assets/logo.png'
 
 
 
@@ -15,11 +15,15 @@ const useStyles = makeStyles((theme) => ({
         flexGrow: 1,
     },
     menuButton: {
-        marginRight: theme.spacing(2),
+        margin: theme.spacing(2),
+        backgroundColor: "white",
     },
     title: {
         flexGrow: 1,
     },
+    header: {
+        backgroundColor: "#0a472e"
+    }
 }));
 
 
@@ -45,24 +49,26 @@ function Header() {
     }
 
     return (
-        <AppBar position="static">
+        <AppBar position="static" className={classes.header}>
             <Toolbar>
                 <IconButton onClick={() => window.location = "/dashboard"} edge="start" className={classes.menuButton} color="inherit" aria-label="menu">
-                    <MenuIcon />
+                    <img src={logo} style={{ width: 80 }} />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
                     Site Ecommerce
-              </Typography>
+                </Typography>
                 {user == null ?
                     <div>
-                        <Button color="inherit" onClick={() => window.location = "/login"}>Connexion</Button>
-                        <Button color="inherit" onClick={() => window.location = "/signup"}>Inscription</Button>
+                        <Button size="large" color="inherit" onClick={() => window.location = "/login"}>Connexion</Button>
+                        <Button size="large" color="inherit" onClick={() => window.location = "/signup"}>Inscription</Button>
                     </div>
                     :
                     <div>
-                        <Button color="inherit" onClick={() => window.location = "/addproduct"}>Ajouter un produit</Button>
-                        <Button color="inherit" onClick={() => window.location = "/panier"}>Panier</Button>
-                        <Button color="inherit" onClick={logout}>Déconnexion</Button>
+                        {user.admin ? <Button size="large" color="inherit" onClick={() => window.location = "/addproduct"}>Ajouter un produit</Button> : null}
+                        {user.admin ? <Button size="large" color="inherit" onClick={() => window.location = "/addvendor"}>Ajouter un fournisseur</Button> : null}
+
+                        <Button size="large" color="inherit" onClick={() => window.location = "/panier"}>Panier</Button>
+                        <Button size="large" color="inherit" onClick={logout}>Déconnexion</Button>
                     </div>
                 }
             </Toolbar>

@@ -109,6 +109,9 @@ function Dashboard() {
                                     title="Produit"
                                 />
                                 <CardContent>
+                                    <Typography variant="h4" gutterBottom>
+                                        {produit.prix_produit} €
+                                    </Typography>
                                     <Typography variant="body2" color="textSecondary" component="p">
                                         {produit.description_courte}
                                     </Typography>
@@ -120,6 +123,7 @@ function Dashboard() {
                                     <IconButton aria-label="share">
                                         <ShareIcon />
                                     </IconButton>
+                                    <Button onClick={() => window.location = "/profile-product/" + produit.product_id}> Voir plus</Button>
 
                                 </CardActions>
                                 <Collapse in={true} timeout="auto" unmountOnExit>

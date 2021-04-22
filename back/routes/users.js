@@ -8,6 +8,20 @@ const nodemailer = require("nodemailer");
 
 
 
+const path = require("path");
+const multer = require("multer");
+
+const storage = multer.diskStorage({
+  destination: "public/uploads/",
+  filename: function (req, file, cb) {
+    cb(null, "IMAGE-" + Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1000000 },
+}).single("file");
 
 
 
@@ -33,6 +47,7 @@ connection.query(
     prenom VARCHAR(30) NOT NULL,
     email VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(200),
+    admin BOOLEAN DEFAULT FALSE,
     reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
   )
   `
@@ -167,33 +182,60 @@ router.post('/login', (req, res) => {
 
 
 router.post('/addvendor', (req, res) => {
-  console.log(req.body)
 
   try {
-    const nom_gerant = req.body.nom_gerant
-    const nom_entreprise = req.body.nom_entreprise
-    const prenom_gerant = req.body.prenom_gerant
-    const email = req.body.email
-    const adresse = req.body.adresse
-    const categorie = req.body.categorie
+
+    const userId = req.body.userId
+    // on fait une reqête pour voir si le user est admin
 
     connection.query(
       `
-    INSERT INTO Vendors (nom_entreprise, nom_gerant, prenom_gerant, email, adresse, categorie) VALUES ("${nom_entreprise}","${nom_gerant}", "${prenom_gerant}", "${email}", "${adresse}", "${categorie}")
+    SELECT * FROM Users WHERE user_id="${userId}"
     `,
       function (err, results, fields) {
         if (err) {
-          console.log(err)
-          res.json({ success: false, message: "Erreur lors de l'ajout d'un producteur, merci de réessayer" })
+          res.json({ success: false, message: "Erreur lors de l'inscription, merci de réessayer" })
           return;
         }
-        console.log(err)
-        console.log(results)
-        console.log(fields)
-        res.json({ success: true, message: "Le producteur a bien été ajouté dans la base de données" })
+
+        if (results.length == 0) {
+          res.json({ success: false, message: "Utilisateur inexistant" })
+          return
+        }
+
+        if (!results[0].admin) {
+          res.json({ success: false, message: "Vous devez être un administrateur pour ajouter un fournisseur" })
+          return
+        }
+
+        const nom_gerant = req.body.nom_gerant
+        const nom_entreprise = req.body.nom_entreprise
+        const prenom_gerant = req.body.prenom_gerant
+        const email = req.body.email
+        const adresse = req.body.adresse
+        const categorie = req.body.categorie
+
+        connection.query(
+          `
+        INSERT INTO Vendors (nom_entreprise, nom_gerant, prenom_gerant, email, adresse, categorie) VALUES ("${nom_entreprise}","${nom_gerant}", "${prenom_gerant}", "${email}", "${adresse}", "${categorie}")
+        `,
+          function (err, results, fields) {
+            if (err) {
+              console.log(err)
+              res.json({ success: false, message: "Erreur lors de l'ajout d'un producteur, merci de réessayer" })
+              return;
+            }
+            console.log(err)
+            console.log(results)
+            console.log(fields)
+            res.json({ success: true, message: "Le producteur a bien été ajouté dans la base de données" })
+
+          }
+        )
 
       }
     )
+
   } catch (e) {
     console.log(e)
   }
@@ -229,37 +271,63 @@ router.post('/addproduct', (req, res) => {
   // res comme response: contient tout ce qu'on va envoyer au front-end
 
   try {
-    const nom_produit = req.body.nom_produit
-    const prix_produit = req.body.prix_produit
-    const description_courte = req.body.description_courte
-    const description_longue = req.body.description_longue
-    const producteur_id = req.body.producteur_id
-    const poids_produit = req.body.poids_produit
-    const tva_produit = req.body.tva_produit
-    const frais_port = req.body.frais_port
-    const categorie_produit = req.body.categorie_produit
-    const quantites_disponibles = req.body.quantites_disponibles
-    const img_url = req.body.img_url
-
-    console.log(req.body)
+    const userId = req.body.userId
+    // on fait une reqête pour voir si le user est admin
 
     connection.query(
       `
-    INSERT INTO Products (nom_produit, prix_produit, description_courte, description_longue, producteur_id, poids_produit, tva_produit, frais_port, categorie_produit, quantites_disponibles, img_url) VALUES ("${nom_produit}", "${prix_produit}", "${description_courte}", "${description_longue}", "${producteur_id}", "${poids_produit}", "${tva_produit}", "${frais_port}", "${categorie_produit}", "${quantites_disponibles}", "${img_url}")
+    SELECT * FROM Users WHERE user_id="${userId}"
     `,
       function (err, results, fields) {
         if (err) {
-          console.log(err)
-          res.json({ success: false, message: "Erreur lors de l'enregistrement produit, merci de réessayer" })
+          res.json({ success: false, message: "Erreur lors de l'inscription, merci de réessayer" })
           return;
         }
-        console.log(err)
-        console.log(results)
-        console.log(fields)
-        res.json({ success: true, message: "Le produit a bien été enregistrée" })
+
+        if (results.length == 0) {
+          res.json({ success: false, message: "Utilisateur inexistant" })
+          return
+        }
+
+        if (!results[0].admin) {
+          res.json({ success: false, message: "Vous devez être un administrateur pour ajouter un produit" })
+          return
+        }
+        const nom_produit = req.body.nom_produit
+        const prix_produit = req.body.prix_produit
+        const description_courte = req.body.description_courte
+        const description_longue = req.body.description_longue
+        const producteur_id = req.body.producteur_id
+        const poids_produit = req.body.poids_produit
+        const tva_produit = req.body.tva_produit
+        const frais_port = req.body.frais_port
+        const categorie_produit = req.body.categorie_produit
+        const quantites_disponibles = req.body.quantites_disponibles
+        const img_url = req.body.img_url
+
+        console.log(req.body)
+
+        connection.query(
+          `
+          INSERT INTO Products (nom_produit, prix_produit, description_courte, description_longue, producteur_id, poids_produit, tva_produit, frais_port, categorie_produit, quantites_disponibles, img_url) VALUES ("${nom_produit}", "${prix_produit}", "${description_courte}", "${description_longue}", "${producteur_id}", "${poids_produit}", "${tva_produit}", "${frais_port}", "${categorie_produit}", "${quantites_disponibles}", "${img_url}")
+          `,
+          function (err, results, fields) {
+            if (err) {
+              console.log(err)
+              res.json({ success: false, message: "Erreur lors de l'enregistrement produit, merci de réessayer" })
+              return;
+            }
+            console.log(err)
+            console.log(results)
+            console.log(fields)
+            res.json({ success: true, message: "Le produit a bien été enregistrée" })
+
+          }
+        )
 
       }
     )
+
   } catch (e) {
     console.log(e)
   }
@@ -291,6 +359,52 @@ router.get('/getproducts', (req, res) => {
   }
 })
 
+// route pour récup le profil du produit
+router.get('/getprofileproduct/:product_id', (req, res) => {
+  try {
+    const product_id = req.params.product_id
+    // dans un premier temps on récupère le vendor avec son id
+    connection.query(
+      `
+    SELECT * FROM Products WHERE product_id = ${product_id}
+    `,
+      function (err, products, fields) {
+        if (err || products.length == 0) {
+          console.log(err)
+          res.json({ success: false, message: "Erreur lors de la récupération du produits, merci de réessayer" })
+          return;
+        }
+        const product = products[0]
+        connection.query(
+          `
+    SELECT * FROM Vendors WHERE vendor_id = ${product.producteur_id}
+    `,
+          function (err, vendors, fields) {
+            if (err || vendors.length == 0) {
+              console.log(err)
+              res.json({ success: false, message: "Erreur lors de la récupération des produits, merci de réessayer" })
+              return;
+            }
+            const vendor = vendors[0]
+
+            console.log(vendor)
+            res.json({ success: true, product, vendor })
+
+
+
+          }
+        )
+
+
+
+
+
+      }
+    )
+  } catch (e) {
+    console.log(e)
+  }
+})
 
 // route pour récup le profil du vendeur et ses produits
 router.get('/getprofilevendor/:vendor_id', (req, res) => {
@@ -391,4 +505,19 @@ router.post('/sendDevis', async (req, res) => {
     console.log(e)
   }
 })
+
+
+router.post('/upload', upload, (req, res) => {
+  try {
+    console.log(req.file)
+    res.json({ success: true, url: req.file.filename })
+  } catch (e) {
+    console.log(e)
+  }
+})
+
+
+
+
+
 module.exports = router;

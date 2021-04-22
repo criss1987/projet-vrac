@@ -15,8 +15,21 @@ function AddVendor() {
     const [categorie, setCategorie] = useState("")
 
 
+    const [user, setUser] = useState(null)
+    // une fois que le composant est chargé cette fonction se lance
+    useEffect(() => {
+        // cette fonction vérifie si l'utilisateur est réellement connecté
+        // c'est à dire si l'objet utilisateur est stocké dans le localstorage
+        const u = localStorage.getItem('user');
+        if (u) {
+            setUser(JSON.parse(u))
+        }
+    }, [])
+
+
     function addVendor() {
-        axios.post('http://localhost:3001/users/addvendor', { nom_entreprise, nom_gerant, prenom_gerant, email, adresse, categorie }).then(res => {
+
+        axios.post('http://localhost:3001/users/addvendor', { nom_entreprise, nom_gerant, prenom_gerant, email, adresse, categorie, userId: user.user_id }).then(res => {
             alert(res.data.message)
         })
     }

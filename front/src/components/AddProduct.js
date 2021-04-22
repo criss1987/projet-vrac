@@ -19,8 +19,17 @@ function AddProduct() {
     const [categorie_produit, setCategorieProduit] = useState("")
     const [quantites_disponibles, setQuantitesDisponibles] = useState("")
     const [img_url, setImgUrl] = useState("")
-
-
+    const [file, setFile] = useState("")
+    const [user, setUser] = useState(null)
+    // une fois que le composant est chargé cette fonction se lance
+    useEffect(() => {
+        // cette fonction vérifie si l'utilisateur est réellement connecté
+        // c'est à dire si l'objet utilisateur est stocké dans le localstorage
+        const u = localStorage.getItem('user');
+        if (u) {
+            setUser(JSON.parse(u))
+        }
+    }, [])
 
     useEffect(() => {
         // une fois que le composant est chargé, on récupère les producteurs pour les afficher dans le select
@@ -36,10 +45,23 @@ function AddProduct() {
     function addProduct() {
         axios.post('http://localhost:3001/users/addproduct', {
             nom_produit, prix_produit, description_courte, description_longue, producteur_id, poids_produit
-            , tva_produit, frais_port, categorie_produit, quantites_disponibles, img_url
+            , tva_produit, frais_port, categorie_produit, quantites_disponibles, img_url, userId: user.user_id
         }).then(res => {
             alert(res.data.message)
         })
+    }
+
+
+    function upload() {
+        const formData = new FormData()
+        formData.append('file', file)
+        axios.post('http://localhost:3001/users/upload', formData).then(res => {
+            setImgUrl("http://localhost:3001/uploads/" + res.data.url)
+        })
+    }
+
+    function onFileChange(e) {
+        setFile(e.target.files[0])
     }
 
 
@@ -50,6 +72,14 @@ function AddProduct() {
                     <Typography color="textSecondary" gutterBottom>
                         Ajouter un produit
                      </Typography>
+                    <form>
+                        <div className="form-group">
+                            <input type="file" onChange={onFileChange} />
+                        </div>
+                        <div className="form-group">
+                            <button className="btn btn-primary" type="button" onClick={upload}>Upload</button>
+                        </div>
+                    </form>
                     <div style={{ margin: 10 }}>
                         <TextField value={nom_produit} onChange={e => setNomProduit(e.target.value)} label="Nom Produit" variant="outlined" type="text" />
                     </div>

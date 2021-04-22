@@ -117,6 +117,8 @@ function ProfileVendor() {
                                     <IconButton aria-label="share">
                                         <ShareIcon />
                                     </IconButton>
+                                    <Button onClick={() => window.location = "/profile-product/" + produit.product_id}> Voir plus</Button>
+
 
                                 </CardActions>
                                 <Collapse in={true} timeout="auto" unmountOnExit>

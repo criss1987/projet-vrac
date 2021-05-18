@@ -3,11 +3,7 @@ var router = express.Router();
 const mysql = require('mysql2');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
-
 const nodemailer = require("nodemailer");
-
-
-
 const path = require("path");
 const multer = require("multer");
 
@@ -22,11 +18,6 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 1000000 },
 }).single("file");
-
-
-
-
-
 
 // create the connection to database
 const connection = mysql.createConnection({
@@ -127,10 +118,25 @@ router.post('/register', (req, res) => {
           res.json({ success: false, message: "Erreur lors de l'inscription, merci de réessayer" })
           return;
         }
-        console.log(err)
-        console.log(results)
-        console.log(fields)
-        res.json({ success: true, message: "Vous êtes bien inscrit sur le site" })
+
+        connection.query(
+          `
+          SELECT * FROM Users WHERE email = "${email}"
+          `,
+          function (err, results, fields) {
+            if (err) {
+              console.log(err)
+              res.json({ success: false, message: "Votre compte a bien été créé, mais la connexion a échoué. Merci de vous rendre sur la page de Connexion pour vous connecter" })
+              return;
+            }
+
+            const user = results[0];
+            res.json({ success: true, message: "Vous êtes bien inscrit sur le site", user: user })
+          }
+        )
+
+
+
 
       }
     )
@@ -333,6 +339,35 @@ router.post('/addproduct', (req, res) => {
   }
 })
 
+router.put("/updateproduct", (req, res) => {
+  try {
+
+    const { product_id, nom_produit, prix_produit, description_courte, description_longue, frais_port, img_url } = req.body
+
+
+    connection.query(
+      `
+    UPDATE Products SET nom_produit = "${nom_produit}", prix_produit = "${prix_produit}", description_courte = "${description_courte}", description_longue = "${description_longue}", img_url = "${img_url}", frais_port = "${frais_port}" WHERE product_id = "${product_id}"
+    `,
+      function (err, results, fields) {
+        if (err) {
+          console.log(err)
+          res.json({ success: false, message: "Erreur lors de la mise à jour du produit" })
+          return;
+        }
+        console.log(err)
+        console.log(results)
+        console.log(fields)
+        res.json({ success: true, message: "Le produit a bien été mis à jour" })
+
+      }
+    )
+
+  } catch (e) {
+    console.log(e)
+    res.sendStatus(500)
+  }
+})
 
 // route pour récupérer tous les produits
 router.get('/getproducts', (req, res) => {
@@ -390,15 +425,8 @@ router.get('/getprofileproduct/:product_id', (req, res) => {
             console.log(vendor)
             res.json({ success: true, product, vendor })
 
-
-
           }
         )
-
-
-
-
-
       }
     )
   } catch (e) {
@@ -500,6 +528,8 @@ router.post('/sendDevis', async (req, res) => {
     for (var key of Object.keys(grouped)) {
       await sendMail(key, grouped[key], total, user)
     }
+
+    res.json({ success: true, message: "Votre commande a bien été prise en compte." })
 
   } catch (e) {
     console.log(e)

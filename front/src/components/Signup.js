@@ -9,10 +9,22 @@ function Singup() {
     const [prenom, setPrenom] = useState("")
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
 
     function register() {
+        setLoading(true)
         axios.post('http://localhost:3001/users/register', { nom, prenom, email, password }).then(res => {
             console.log(res.data)
+            if (res.data.success) {
+                localStorage.setItem('user', JSON.stringify(res.data.user))
+                window.location = "/dashboard"
+            } else {
+                alert(res.data.message)
+            }
+        }).catch(e => {
+            alert(e)
+        }).finally(() => {
+            setLoading(false)
         })
     }
 
@@ -35,7 +47,7 @@ function Singup() {
                     <div style={{ margin: 10 }}>
                         <TextField value={password} onChange={e => setPassword(e.target.value)} label="Mot de passe" variant="outlined" type="password" />
                     </div>
-                    <Button variant="contained" color="primary" onClick={register}>Créer un compte</Button>
+                    <Button variant="contained" color="primary" onClick={register} disabled={loading}>Créer un compte</Button>
 
 
                 </CardContent>

@@ -91,12 +91,6 @@ function ProfileVendor() {
                         <Grid item xs={3}>
                             <Card key={'produit' + index} className={classes.root}>
                                 <CardHeader
-
-                                    action={
-                                        <IconButton aria-label="settings">
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    }
                                     title={produit.nom_produit}
                                     subheader={produit.nom_entreprise}
                                 />
@@ -113,9 +107,6 @@ function ProfileVendor() {
                                 <CardActions disableSpacing>
                                     <IconButton aria-label="add to favorites">
                                         <FavoriteIcon />
-                                    </IconButton>
-                                    <IconButton aria-label="share">
-                                        <ShareIcon />
                                     </IconButton>
                                     <Button onClick={() => window.location = "/profile-product/" + produit.product_id}> Voir plus</Button>
 

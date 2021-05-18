@@ -13,6 +13,7 @@ import logo from '../assets/logo.png'
 const useStyles = makeStyles((theme) => ({
     root: {
         flexGrow: 1,
+        zIndex: 9999
     },
     menuButton: {
         margin: theme.spacing(2),
@@ -55,7 +56,7 @@ function Header() {
                     <img src={logo} style={{ width: 80 }} />
                 </IconButton>
                 <Typography variant="h6" className={classes.title}>
-                    Site Ecommerce
+                    Votre solution 100% gagnante pour valoriser les producteurs locaux de la Bretagne
                 </Typography>
                 {user == null ?
                     <div>
@@ -68,6 +69,8 @@ function Header() {
                         {user.admin ? <Button size="large" color="inherit" onClick={() => window.location = "/addvendor"}>Ajouter un fournisseur</Button> : null}
 
                         <Button size="large" color="inherit" onClick={() => window.location = "/panier"}>Panier</Button>
+                        <Button size="large" color="inherit" onClick={() => window.location = "/profile"}>Profil</Button>
+
                         <Button size="large" color="inherit" onClick={logout}>Déconnexion</Button>
                     </div>
                 }

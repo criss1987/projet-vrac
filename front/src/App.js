@@ -16,6 +16,8 @@ import AddProduct from './components/AddProduct';
 import ProfileVendor from './components/ProfileVendor';
 import ProfileProduct from './components/ProfileProduct';
 import Panier from './components/Panier';
+import Profile from './components/Profile';
+import UpdateProduct from './components/UpdateProduct';
 
 
 
@@ -62,7 +64,10 @@ function App() {
             {user && user.admin ? <Route path="/addproduct" component={AddProduct} /> : null}
             <Route path="/profile-vendor/:vendor_id" component={ProfileVendor} />
             <Route path="/profile-product/:product_id" component={ProfileProduct} />
+            <Route path="/update-product/:product_id" component={UpdateProduct} />
+
             <Route path="/panier" component={Panier} />
+            <Route path="/profile" component={Profile} />
             <Route path="/" component={Dashboard} />
 
           </Switch>

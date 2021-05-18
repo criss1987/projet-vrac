@@ -21,12 +21,22 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Grid from '@material-ui/core/Grid';
 
-function ProfileProduct() {
+function UpdateProduct() {
 
     const [user, setUser] = useState(null)
     const [expanded, setExpanded] = useState(false);
     const [product, setProduct] = useState(null)
     const [vendor, setVendor] = useState(null)
+
+    const [nom_produit, setNomProduit] = useState("")
+    const [prix_produit, setPrixProduit] = useState("")
+    const [description_courte, setDescriptionCourte] = useState("")
+    const [description_longue, setDescriptionLongue] = useState("")
+    const [frais_port, setFraisPort] = useState("")
+    const [file, setFile] = useState(null)
+    const [img_url, setImgUrl] = useState("")
+
+
     const { product_id } = useParams();
     // une fois que le composant est chargé cette fonction se lance
     useEffect(() => {
@@ -34,7 +44,16 @@ function ProfileProduct() {
         // c'est à dire si l'objet utilisateur est stocké dans le localstorage
         const u = localStorage.getItem('user');
         if (u) {
-            setUser(JSON.parse(u))
+            const parsedUser = JSON.parse(u)
+            if (parsedUser.admin) {
+                setUser(JSON.parse(u))
+
+            } else {
+                window.location = "/dashboard"
+
+            }
+        } else {
+            window.location = "/dashboard"
         }
     }, [])
 
@@ -43,6 +62,12 @@ function ProfileProduct() {
         axios.get('http://localhost:3001/users/getprofileproduct/' + product_id).then(res => {
             if (res.data.success) {
                 setProduct(res.data.product)
+                setNomProduit(res.data.product.nom_produit)
+                setPrixProduit(res.data.product.prix_produit)
+                setDescriptionCourte(res.data.product.description_courte)
+                setDescriptionLongue(res.data.product.description_longue)
+                setFraisPort(res.data.product.frais_port)
+                setImgUrl(res.data.product.img_url)
                 setVendor(res.data.vendor)
             } else {
                 alert(res.data.message)
@@ -77,6 +102,33 @@ function ProfileProduct() {
 
     const classes = useStyles();
 
+
+    const updateProduct = () => {
+
+        axios.put('http://localhost:3001/users/updateproduct', { nom_produit, prix_produit, description_courte, description_longue, frais_port, img_url, product_id: product.product_id })
+            .then(res => {
+                console.log(res.data)
+                alert(res.data.message)
+            }).catch(e => {
+                alert(e)
+            }).finally(() => {
+
+            })
+    }
+
+    function upload() {
+        const formData = new FormData()
+        formData.append('file', file)
+        axios.post('http://localhost:3001/users/upload', formData).then(res => {
+            setImgUrl("http://localhost:3001/uploads/" + res.data.url)
+        })
+    }
+
+
+    function onFileChange(e) {
+        setFile(e.target.files[0])
+    }
+
     if (product != null) {
         return (
             <div >
@@ -102,41 +154,45 @@ function ProfileProduct() {
                             <CardHeader
 
 
-                                title={product.nom_produit}
+                                title={<TextField value={nom_produit} label={"Nom du produit"} onChange={e => setNomProduit(e.target.value)} />}
                                 subheader={product.nom_entreprise}
                             />
+                            <form style={{ marginTop: 20 }}>
+
+                                <input type="file" id="contained-button-file" onChange={onFileChange} />
+                                <Button variant="contained" component="span" type="button" onClick={upload}>
+                                    Upload
+                                </Button>
+
+                            </form>
                             <CardMedia
                                 className={classes.media}
-                                image={product.img_url}
+                                image={img_url}
                                 title="Produit"
                             />
                             <CardContent>
-                                <Typography variant="h4" gutterBottom>
-                                    {product.prix_produit} €
-                        </Typography>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    {product.description_courte}
-                                </Typography>
-                                <Typography variant="body2" color="textSecondary" component="p">
-                                    Frais de port: {user != null ? product.frais_port + "€" : "Connectez-vous pour le connaître"}
-                                </Typography>
+
+                                <TextField value={prix_produit} label={"Prix en €"} onChange={e => setPrixProduit(e.target.value)} />
+
+
+                                <TextField value={description_courte} label={"Description courte"} onChange={e => setDescriptionCourte(e.target.value)} />
+
+
+                                <TextField value={frais_port} label={"Frais de port"} onChange={e => setFraisPort(e.target.value)} />
+
                             </CardContent>
-                            <CardActions >
 
-                                {user != null && user.admin ? <Button onClick={() => window.location = "/update-product/" + product.product_id}>
-                                    Mettre à jour le produit
-                                </Button> : null}
-
-
-                            </CardActions>
                             <Collapse in={true} timeout="auto" unmountOnExit>
                                 <CardContent>
-                                    <Typography paragraph>
-                                        {product.description_longue}
-                                    </Typography>
+
+                                    <TextField value={description_longue} label={"Description longue"} onChange={e => setDescriptionLongue(e.target.value)} />
+
 
                                 </CardContent>
                             </Collapse>
+                            <CardActions disableSpacing>
+                                <Button color="primary" variant="contained" onClick={updateProduct}>Mettre à jour</Button>
+                            </CardActions>
                         </Card>}
                     </Grid>
                 </Grid>
@@ -152,4 +208,4 @@ function ProfileProduct() {
 
 
 // chaque composant doit être exporté pour pouvoir l'utiliser ailleurs
-export default ProfileProduct
+export default UpdateProduct

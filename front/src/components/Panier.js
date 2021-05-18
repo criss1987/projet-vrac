@@ -10,6 +10,8 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import { makeStyles } from '@material-ui/core/styles';
 import { Button } from '@material-ui/core';
 import axios from 'axios'
+import CircularProgress from '@material-ui/core/CircularProgress';
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -30,6 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const Panier = (props) => {
     const [listProducts, setListProducts] = useState([])
     const [user, setUser] = useState(null)
+    const [loading, setLoading] = useState(false)
 
     const classes = useStyles();
 
@@ -56,10 +59,19 @@ const Panier = (props) => {
 
 
     const sendDevis = () => {
+        setLoading(true)
         axios.post('http://localhost:3001/users/sendDevis', { listProducts, user, total }).then(res => {
-            console.log(res.data)
+            if (res.data.success) {
+                // on vide le panier avant de redirigers
+                localStorage.removeItem('products')
+                alert(res.data.message)
+                window.location = "/dashboard"
+
+            }
         }).catch(e => {
             console.log(e)
+        }).finally(() => {
+            setLoading(false)
         })
     }
     return (
@@ -90,7 +102,10 @@ const Panier = (props) => {
                 </ListItem>)}
             </List>
             <h1>Total: {total.toFixed(2)} €</h1>
-            <Button onClick={sendDevis}>Valider le panier</Button>
+
+            <Button onClick={sendDevis} disabled={loading}>Valider le panier</Button>
+            {loading && <CircularProgress size={24} />}
+
         </div>
     )
 }

@@ -95,11 +95,7 @@ function Dashboard() {
                             <Card key={'produit' + index} className={classes.root}>
                                 <CardHeader
 
-                                    action={
-                                        <IconButton aria-label="settings">
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    }
+
                                     title={produit.nom_produit}
                                     subheader={<Button onClick={() => window.location = '/profile-vendor/' + produit.producteur_id}>{produit.nom_entreprise}</Button>}
                                 />
@@ -120,9 +116,7 @@ function Dashboard() {
                                     <IconButton aria-label="add to cart" onClick={() => addProduct(produit)}>
                                         <AddShoppingCartIcon />
                                     </IconButton>
-                                    <IconButton aria-label="share">
-                                        <ShareIcon />
-                                    </IconButton>
+
                                     <Button onClick={() => window.location = "/profile-product/" + produit.product_id}> Voir plus</Button>
 
                                 </CardActions>
